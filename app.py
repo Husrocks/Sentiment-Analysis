@@ -20,90 +20,99 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 st.markdown("""
     <style>
-    /* Import Modern Google Font */
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
+    /* Import Inter Font for a professional, clean look */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     html, body, [class*="css"] {
-        font-family: 'Outfit', sans-serif !important;
+        font-family: 'Inter', sans-serif !important;
     }
 
-    /* Glassmorphism for metric cards and containers */
+    /* Clean, minimal metric cards */
     [data-testid="stMetric"], [data-testid="stVerticalBlock"] {
-        background: rgba(30, 41, 59, 0.4) !important;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important;
-        padding: 24px !important;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: #09090b !important; /* matches main bg */
+        border: 1px solid #27272a !important; /* subtle gray border */
+        border-radius: 8px !important;
+        padding: 16px !important;
+        box-shadow: none !important; /* No shadows for flat minimal look */
+        transition: border-color 0.2s ease;
     }
 
     [data-testid="stMetric"]:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+        border-color: #3f3f46 !important;
     }
     
-    /* Enhance metric values with a gradient */
+    /* Fix truncated metric values by reducing font size */
     [data-testid="stMetricValue"] {
-        background: -webkit-linear-gradient(45deg, #8b5cf6, #3b82f6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 2.8rem !important;
-        font-weight: 800 !important;
+        color: #fafafa !important;
+        font-size: 1.8rem !important; /* Reduced from 2.8rem to fit in columns */
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+        background: none !important;
+        -webkit-text-fill-color: #fafafa !important; /* Remove gradient */
     }
     
+    /* Fix truncated labels */
     [data-testid="stMetricLabel"] {
-        color: #94a3b8 !important;
-        font-size: 0.9rem !important;
-        font-weight: 600 !important;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
+        color: #a1a1aa !important; /* zinc-400 */
+        font-size: 0.875rem !important; /* smaller, standard size */
+        font-weight: 500 !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
+        margin-bottom: 4px !important;
+    }
+    
+    /* Standard delta values */
+    [data-testid="stMetricDelta"] {
+        font-size: 0.875rem !important;
     }
 
-    /* Premium Animated Buttons */
+    /* Clean minimal buttons */
     .stButton > button {
-        background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 12px 28px !important;
+        background-color: #fafafa !important;
+        color: #09090b !important; /* High contrast text */
+        border: 1px solid #fafafa !important;
+        border-radius: 6px !important;
+        padding: 8px 16px !important;
+        font-size: 0.875rem !important;
         font-weight: 600 !important;
-        letter-spacing: 0.5px !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;
+        letter-spacing: normal !important;
+        box-shadow: none !important;
+        transition: all 0.2s ease !important;
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5) !important;
-        background: linear-gradient(135deg, #9c73f7 0%, #4f90f7 100%) !important;
+        background-color: #e4e4e7 !important; /* zinc-200 */
+        border-color: #e4e4e7 !important;
+        transform: none !important;
+        box-shadow: none !important;
     }
     
-    /* Clean up headers */
+    /* Clean headers */
     h1, h2, h3 {
-        font-weight: 700 !important;
-        letter-spacing: -0.5px;
+        color: #fafafa !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.025em !important;
     }
     
-    /* Sidebar subtle border */
+    /* Sidebar styling */
     [data-testid="stSidebar"] {
-        border-right: 1px solid rgba(255,255,255,0.05);
+        border-right: 1px solid #27272a !important; /* zinc-800 */
     }
     
-    /* Make text inputs look sleek */
+    /* Input fields */
     .stTextArea textarea {
-        background-color: rgba(15, 23, 42, 0.6) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 10px !important;
-        color: #f8fafc !important;
-        font-family: 'Outfit', sans-serif !important;
-        padding: 15px !important;
+        background-color: #09090b !important;
+        border: 1px solid #27272a !important;
+        border-radius: 6px !important;
+        color: #fafafa !important;
+        font-family: 'Inter', sans-serif !important;
+        padding: 12px !important;
+        font-size: 0.875rem !important;
     }
     
     .stTextArea textarea:focus {
-        border-color: #8b5cf6 !important;
-        box-shadow: 0 0 0 1px #8b5cf6 !important;
+        border-color: #fafafa !important;
+        box-shadow: 0 0 0 1px #fafafa !important;
     }
     </style>
 """, unsafe_allow_html=True)
