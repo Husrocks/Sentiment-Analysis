@@ -16,12 +16,11 @@ class DataLoader:
         """Loads data from the CSV file."""
         try:
             self.raw_data = pd.read_csv(self.file_path)
-            # Depending on your dataset, columns might be 'review' and 'sentiment'
-            # Let's ensure we just keep the top 1000 rows for speed while testing
-            self.raw_data = self.raw_data.head(1000)
+            # Removed self.raw_data.head(1000) to train on full dataset
             print("Data loaded successfully.")
         except FileNotFoundError:
             print("Error: File not found. Check the path.")
+            raise FileNotFoundError(f"Dataset not found at {self.file_path}")
 
     def handle_missing_values(self):
         """Removes empty rows."""
@@ -39,7 +38,14 @@ class DataLoader:
         X_text = self.cleaned_data['review']
         y = self.cleaned_data['sentiment']
 
+        # Split data FIRST to prevent data leakage
+        X_train_text, X_test_text, y_train, y_test = train_test_split(X_text, y, test_size=0.2, random_state=42)
+
         # Convert text to numbers so the AI can understand it
-        X_vectorized = self.vectorizer.fit_transform(X_text)
+        # Fit ONLY on training data
+        X_train_vectorized = self.vectorizer.fit_transform(X_train_text)
         
-        return train_test_split(X_vectorized, y, test_size=0.2, random_state=42)
+        # Transform test data (do NOT fit)
+        X_test_vectorized = self.vectorizer.transform(X_test_text)
+        
+        return X_train_vectorized, X_test_vectorized, y_train, y_test

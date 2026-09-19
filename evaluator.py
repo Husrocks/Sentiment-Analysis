@@ -17,19 +17,29 @@ class ModelEvaluator:
         fig = px.imshow(
             cm, text_auto=True, aspect="auto", color_continuous_scale='Blues',
             labels=dict(x="Predicted", y="Actual", color="Count"),
-            x=['Negative', 'Positive'], y=['Negative', 'Positive']
+            x=['Negative', 'Positive'], y=['Negative', 'Positive'],
+            template='plotly_dark'
         )
-        fig.update_layout(title='Confusion Matrix', height=400)
+        fig.update_layout(title='Confusion Matrix', height=400, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         return fig
 
-    def plot_roc_curve(self):
+    def plot_roc_curve(self, pos_label='positive'):
         """Generates the ROC Curve."""
         if self.y_probs is None:
             return None
         
-        # Calculate ROC points
-        # Assuming Positive class is column 1
-        fpr, tpr, thresholds = roc_curve(self.y_true, self.y_probs[:, 1], pos_label='positive')
+        # Check if model classes are available in the model object
+        # Since evaluator only receives y_true and y_probs, we can't easily 
+        # get classes_ without passing the model. However, we can use the 
+        # unique values of y_true to try and figure it out.
+        
+        # A simple fallback: if pos_label is in y_true, we assume its probability
+        # is at index 1 (or we can just fallback to index 1 if pos_label is string)
+        # To be robust, let's assume y_probs has shape (n_samples, 2)
+        # We will plot ROC using probability of the positive class.
+        
+        # Assuming Positive class is column 1 (standard for scikit-learn binary classifiers)
+        fpr, tpr, thresholds = roc_curve(self.y_true, self.y_probs[:, 1], pos_label=pos_label)
         roc_auc = auc(fpr, tpr)
 
         fig = go.Figure()
@@ -44,7 +54,10 @@ class ModelEvaluator:
             title='ROC Curve (Receiver Operating Characteristic)',
             xaxis_title='False Positive Rate',
             yaxis_title='True Positive Rate',
-            height=400
+            height=400,
+            template='plotly_dark',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'
         )
         return fig
 
@@ -79,7 +92,8 @@ class ModelEvaluator:
             orientation='h', 
             title=f'Top {n} Most Important Words',
             color='weight',
-            color_continuous_scale='RdBu'
+            color_continuous_scale='RdBu',
+            template='plotly_dark'
         )
-        fig.update_layout(height=500)
+        fig.update_layout(height=500, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         return fig
