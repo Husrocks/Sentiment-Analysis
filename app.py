@@ -10,109 +10,166 @@ from evaluator import ModelEvaluator
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Sentify Pro | Enterprise Sentiment Analytics",
-    page_icon="🧠",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # -----------------------------------------------------------------------------
-# 2. CUSTOM CSS & STYLING (The Fix)
+# 2. CUSTOM CSS & RESPONSIVE STYLING
 # -----------------------------------------------------------------------------
 st.markdown("""
     <style>
-    /* Import Inter Font for a professional, clean look */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
 
     html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif !important;
+        font-family: 'Geist', sans-serif !important;
     }
 
-    /* Clean, minimal metric cards */
-    [data-testid="stMetric"], [data-testid="stVerticalBlock"] {
-        background-color: #09090b !important; /* matches main bg */
-        border: 1px solid #27272a !important; /* subtle gray border */
-        border-radius: 8px !important;
-        padding: 16px !important;
-        box-shadow: none !important; /* No shadows for flat minimal look */
-        transition: border-color 0.2s ease;
+    /* Base Theme */
+    .stApp {
+        background-color: #000000 !important;
+        color: #ededed !important;
     }
 
-    [data-testid="stMetric"]:hover {
-        border-color: #3f3f46 !important;
+    /* Hide Streamlit Header */
+    header[data-testid="stHeader"] {
+        display: none !important;
     }
     
-    /* Fix truncated metric values by reducing font size */
-    [data-testid="stMetricValue"] {
-        color: #fafafa !important;
-        font-size: 1.8rem !important; /* Reduced from 2.8rem to fit in columns */
-        font-weight: 700 !important;
-        line-height: 1.2 !important;
-        background: none !important;
-        -webkit-text-fill-color: #fafafa !important; /* Remove gradient */
-    }
-    
-    /* Fix truncated labels */
-    [data-testid="stMetricLabel"] {
-        color: #a1a1aa !important; /* zinc-400 */
-        font-size: 0.875rem !important; /* smaller, standard size */
-        font-weight: 500 !important;
-        text-transform: none !important;
-        letter-spacing: normal !important;
-        margin-bottom: 4px !important;
-    }
-    
-    /* Standard delta values */
-    [data-testid="stMetricDelta"] {
-        font-size: 0.875rem !important;
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 1400px !important;
     }
 
-    /* Clean minimal buttons */
-    .stButton > button {
-        background-color: #fafafa !important;
-        color: #09090b !important; /* High contrast text */
-        border: 1px solid #fafafa !important;
-        border-radius: 6px !important;
-        padding: 8px 16px !important;
-        font-size: 0.875rem !important;
-        font-weight: 600 !important;
-        letter-spacing: normal !important;
-        box-shadow: none !important;
-        transition: all 0.2s ease !important;
+    /* Custom HTML Dashboard CSS */
+    .dashboard-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #333;
+    }
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(90deg, #fff, #888);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .dashboard-header p {
+        color: #a1a1aa;
+        margin-top: 0.5rem;
+        font-size: 1rem;
+    }
+
+    /* Custom Metrics Grid (Responsive) */
+    .custom-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    @media (min-width: 768px) {
+        .custom-metrics-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
     
-    .stButton > button:hover {
-        background-color: #e4e4e7 !important; /* zinc-200 */
-        border-color: #e4e4e7 !important;
-        transform: none !important;
-        box-shadow: none !important;
+    .custom-metric-card {
+        background-color: #0a0a0a;
+        border: 1px solid #27272a;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
     }
-    
-    /* Clean headers */
-    h1, h2, h3 {
-        color: #fafafa !important;
-        font-weight: 600 !important;
-        letter-spacing: -0.025em !important;
+    .custom-metric-card:hover {
+        border-color: #52525b;
+        transform: translateY(-2px);
     }
-    
-    /* Sidebar styling */
-    [data-testid="stSidebar"] {
-        border-right: 1px solid #27272a !important; /* zinc-800 */
+    .custom-metric-title {
+        color: #a1a1aa;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
     }
-    
-    /* Input fields */
+    .custom-metric-value {
+        color: #ffffff;
+        font-size: 2.25rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    /* Custom Input and Button Overrides */
     .stTextArea textarea {
-        background-color: #09090b !important;
+        background-color: #0a0a0a !important;
         border: 1px solid #27272a !important;
-        border-radius: 6px !important;
-        color: #fafafa !important;
-        font-family: 'Inter', sans-serif !important;
-        padding: 12px !important;
-        font-size: 0.875rem !important;
+        border-radius: 8px !important;
+        color: #fff !important;
+        padding: 1rem !important;
+        font-size: 1rem !important;
+    }
+    .stTextArea textarea:focus {
+        border-color: #ededed !important;
+        box-shadow: 0 0 0 1px #ededed !important;
     }
     
-    .stTextArea textarea:focus {
-        border-color: #fafafa !important;
-        box-shadow: 0 0 0 1px #fafafa !important;
+    .stButton > button {
+        background-color: #ededed !important;
+        color: #000 !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 0.5rem 1.5rem !important;
+        font-weight: 600 !important;
+        width: 100% !important;
+    }
+    .stButton > button:hover {
+        background-color: #a1a1aa !important;
+    }
+    
+    /* Result Banner */
+    .result-banner {
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-left: 4px solid;
+    }
+    .result-banner.positive {
+        background-color: rgba(34, 197, 94, 0.1);
+        border-color: #22c55e;
+    }
+    .result-banner.negative {
+        background-color: rgba(239, 68, 68, 0.1);
+        border-color: #ef4444;
+    }
+    .result-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #fff;
+    }
+    .result-conf {
+        font-size: 0.875rem;
+        color: #a1a1aa;
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #050505 !important;
+        border-right: 1px solid #27272a !important;
+    }
+    
+    /* Desktop vs Mobile Column Overrides */
+    @media (max-width: 992px) {
+        div[data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+        }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -121,32 +178,27 @@ st.markdown("""
 # 3. SIDEBAR CONTROLS
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.title("🧠 Sentify Pro")
-    st.caption("v1.0.0 | OOP Project")
-    
+    st.markdown("### ⚡ Sentify")
+    st.caption("Engineered for Scale")
     st.markdown("---")
     
-    st.subheader("⚙️ Model Configuration")
     model_choice = st.selectbox(
-        "Select Architecture",
-        ["Logistic Regression", "Naive Bayes"],
-        help="Choose the algorithm used for classification."
+        "AI Architecture",
+        ["Logistic Regression", "Naive Bayes"]
     )
     
-    st.markdown("### 📊 Dataset Info")
-    st.info("Training on 50K IMDB Movie Reviews. (Balanced Dataset)")
-    
     st.markdown("---")
-    
+    st.markdown("#### System Status")
+    st.success("🟢 API Operational")
+    st.info("📚 50,000 Records Loaded")
 
 # -----------------------------------------------------------------------------
 # 4. DATA LOADING ENGINE
 # -----------------------------------------------------------------------------
 @st.cache_resource
 def load_system():
-    # Use a try-except block to prevent crashes if file is missing
     try:
-        with st.spinner('🚀 Initializing AI Engine...'):
+        with st.spinner('Waking up AI models...'):
             loader = DataLoader('reviews.csv')
             loader.load_data()
             loader.handle_missing_values()
@@ -155,37 +207,60 @@ def load_system():
     except FileNotFoundError:
         return None, None, None, None, None
 
-# Load data once
 loader, X_train, X_test, y_train, y_test = load_system()
 
 if loader is None:
-    st.error("❌ Critical Error: 'reviews.csv' not found. Please move the dataset into this folder.")
+    st.error("Dataset 'reviews.csv' not found. Please upload it to the root directory.")
     st.stop()
 
 @st.cache_resource
 def get_trained_model(model_name):
-    if model_name == "Logistic Regression":
-        model = LogRegModel()
-    else:
-        model = NaiveBayesModel()
-    
-    # Train the model once
+    model = LogRegModel() if model_name == "Logistic Regression" else NaiveBayesModel()
     model.train(X_train, y_train)
     return model
 
 # -----------------------------------------------------------------------------
-# 5. MAIN DASHBOARD LAYOUT
+# 5. DASHBOARD LAYOUT (Custom HTML injected)
 # -----------------------------------------------------------------------------
-st.title("Sentiment Intelligence Dashboard")
-st.markdown("Real-time text analysis powered by Machine Learning.")
 
-# Create two main columns: Left for Input, Right for Analytics
-left_col, right_col = st.columns([1, 1.5], gap="large")
+st.markdown("""
+<div class="dashboard-header">
+    <h1>Sentiment Intelligence Center</h1>
+    <p>Real-time natural language processing powered by Scikit-Learn.</p>
+</div>
+""", unsafe_allow_html=True)
 
-# --- LEFT COLUMN: INPUT & PREDICTION ---
+# Fetch Model
+active_model = get_trained_model(model_choice)
+preds = active_model.predict(X_test)
+probs = active_model.model.predict_proba(X_test) if hasattr(active_model.model, "predict_proba") else None
+evaluator = ModelEvaluator(y_test, preds, probs)
+acc = evaluator.calculate_metrics()
+
+# Custom Responsive Metrics Grid
+metrics_html = f"""
+<div class="custom-metrics-grid">
+    <div class="custom-metric-card">
+        <div class="custom-metric-title">Model Accuracy</div>
+        <div class="custom-metric-value">{acc*100:.1f}%</div>
+    </div>
+    <div class="custom-metric-card">
+        <div class="custom-metric-title">Training Volume</div>
+        <div class="custom-metric-value">{len(loader.raw_data):,}</div>
+    </div>
+    <div class="custom-metric-card">
+        <div class="custom-metric-title">Active Engine</div>
+        <div class="custom-metric-value">{"LR" if model_choice == "Logistic Regression" else "NB"}</div>
+    </div>
+</div>
+"""
+st.markdown(metrics_html, unsafe_allow_html=True)
+
+# Layout Split (Using CSS media query to force stacking on tablet/mobile)
+left_col, right_col = st.columns([1, 1], gap="large")
+
 with left_col:
-    st.markdown("### 📝 Live Analysis")
-    st.markdown("Enter text below to analyze sentiment polarity.")
+    st.markdown("### Inference Engine")
     
     if 'user_input' not in st.session_state:
         st.session_state.user_input = ""
@@ -194,93 +269,66 @@ with left_col:
         st.session_state.user_input = ""
 
     user_text = st.text_area(
-        "Input Text",
+        "Payload",
         key="user_input",
-        height=200,
-        placeholder="E.g., The cinematography was breathtaking, but the plot felt weak..."
+        height=150,
+        placeholder="Enter unstructured text data here for immediate classification...",
+        label_visibility="collapsed"
     )
     
-    col_btn1, col_btn2 = st.columns([1, 1])
-    with col_btn1:
-        analyze_btn = st.button("🔍 Analyze Sentiment")
-    with col_btn2:
-        st.button("🗑️ Clear", on_click=clear_text)
+    c1, c2 = st.columns(2)
+    with c1:
+        analyze_btn = st.button("Run Inference")
+    with c2:
+        st.button("Clear Buffer", on_click=clear_text)
 
-    # Prediction Logic
     if analyze_btn and user_text:
-        # 1. Fetch cached trained model
-        model = get_trained_model(model_choice)
-            
-        with st.status("Processing...", expanded=True) as status:
-            st.write("Vectorizing input text...")
-            text_vectorized = loader.vectorizer.transform([user_text])
-            st.write("Inferencing...")
-            prediction = model.predict(text_vectorized)[0]
-            
-            # Get Probability (Confidence) if available
-            confidence = 0.0
-            if hasattr(model.model, "predict_proba"):
-                probs = model.model.predict_proba(text_vectorized)
-                confidence = max(probs[0])  # Get highest probability
-            
-            status.update(label="Analysis Complete!", state="complete", expanded=False)
-
-        # 2. Display Result Card
-        st.markdown("---")
-        st.markdown("### Result")
+        text_vectorized = loader.vectorizer.transform([user_text])
+        prediction = active_model.predict(text_vectorized)[0]
         
+        confidence = 0.0
+        if hasattr(active_model.model, "predict_proba"):
+            p = active_model.model.predict_proba(text_vectorized)[0]
+            confidence = max(p) * 100
+            
         if prediction == "positive":
-            st.success(f"**Sentiment: POSITIVE** 😃")
+            st.markdown(f"""
+            <div class="result-banner positive">
+                <div class="result-title">Positive Sentiment Detected</div>
+                <div class="result-conf">Confidence Score: {confidence:.2f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            st.error(f"**Sentiment: NEGATIVE** 😠")
-            
-        if confidence > 0:
-            st.metric("Confidence Score", f"{confidence*100:.2f}%")
-            st.progress(confidence)
+            st.markdown(f"""
+            <div class="result-banner negative">
+                <div class="result-title">Negative Sentiment Detected</div>
+                <div class="result-conf">Confidence Score: {confidence:.2f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-# --- RIGHT COLUMN: ADVANCED ANALYTICS ---
 with right_col:
-    st.markdown("### 📈 Model Performance & Insight")
+    st.markdown("### Telemetry & Diagnostics")
     
-    # Fetch cached trained model
-    active_model = get_trained_model(model_choice)
-
-    # Generate Metrics
-    preds = active_model.predict(X_test)
-    probs = None
-    if hasattr(active_model.model, "predict_proba"):
-        probs = active_model.model.predict_proba(X_test)
-        
-    evaluator = ModelEvaluator(y_test, preds, probs)
-    acc = evaluator.calculate_metrics()
-
-    # Top Metrics Row
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Accuracy", f"{acc*100:.1f}%", "+2.4%")
-    m2.metric("Dataset Size", f"{len(loader.raw_data)}", "Rows")
-    m3.metric("Model Type", "Supervised", "Classification")
-
-    # Tabs for Clean Layout
-    tab1, tab2, tab3 = st.tabs(["🟦 Confusion Matrix", "📈 ROC Curve", "🔠 Feature Importance"])
+    tab1, tab2, tab3 = st.tabs(["Matrix", "ROC", "Features"])
     
     with tab1:
-        st.markdown("##### Visualizing Prediction Errors")
         fig_cm = evaluator.plot_confusion_matrix()
+        # Force background transparency in Plotly for new theme
+        fig_cm.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#ededed')
         st.plotly_chart(fig_cm, use_container_width=True)
-        st.caption("Diagonals represent correct predictions. Off-diagonals are errors.")
 
     with tab2:
-        st.markdown("##### Sensitivity vs. Specificity")
         fig_roc = evaluator.plot_roc_curve()
         if fig_roc:
+            fig_roc.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#ededed')
             st.plotly_chart(fig_roc, use_container_width=True)
         else:
-            st.warning("ROC Curve not available for this model type.")
+            st.warning("ROC not available.")
 
     with tab3:
         if model_choice == "Logistic Regression":
-            st.markdown("##### Which words drive the decision?")
             fig_feat = ModelEvaluator.plot_feature_importance(active_model, loader.vectorizer)
+            fig_feat.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#ededed')
             st.plotly_chart(fig_feat, use_container_width=True)
         else:
-            st.info("Feature Importance is best visualized with Logistic Regression. Switch models in the sidebar!")
+            st.info("Feature Importance requires Logistic Regression.")
